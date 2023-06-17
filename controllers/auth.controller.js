@@ -29,11 +29,12 @@ const loginUser = async (req, res) => {
     if (!user) {
       return res.json({ message: "wrong credential" });
     }
-    const verifyPassword = bcrypt.compare(password, user.password);
-    if (verifyPassword) {
-      const token = jwt.sign({ user }, process.env.JWT_SECRET_KEY);
-      res.json({ token, user });
+    const verifyPassword = await bcrypt.compare(password, user.password);
+    if (!verifyPassword) {
+      return res.json({ message: "wrong password" });
     }
+    const token = jwt.sign({ user }, process.env.JWT_SECRET_KEY);
+    res.json({ token, user });
   } catch (error) {
     res.json({ message: error.message });
   }
